@@ -1,14 +1,15 @@
-from datetime import date
-from textwrap import indent
-from flask import Flask
+from flask import Flask, request, jsonify
 import json
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+
+from sqlalchemy import values
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 db = SQLAlchemy(app)
 
@@ -42,11 +43,22 @@ class User(db.Model):
             'todos': [todo.to_json() for todo in self.todos]
         }
 
-db.create_all()
+@app.route('/login', methods=['POST'])
+def login():
+    values = request.get_json()
+    name = values['username']
+    password = values['password']
+    user = User.query.filter_by(name=name, password=password).first()
+    if user:
+        print("Git")
+        return jsonify({'user': user.name, 'id': user.id, 'success': True})
+    else:
+        print("Nie Git")
+        return jsonify({'success': False,'error': 'User not found'})
 
-@app.route('/todos')
-def todos():
-    li = Todo.query.all()
+@app.route('/todos/<int:user_id>')
+def todos(user_id):
+    li = Todo.query.filter_by(user_id=user_id).all()
     return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
 @app.route('/completeTodo/<int:ident>')
@@ -65,9 +77,9 @@ def deleteTodo(ident):
     li = Todo.query.all()
     return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
-@app.route('/addTodo/<string:txt>/<string:prio>/<string:data>')
-def addTodo(txt, prio, data):
-    db.session.add(Todo(text=txt, isComplete=False, user_id=1, prio=prio,date=datetime.strptime(data, '%Y-%m-%d')))
+@app.route('/addTodo/<string:txt>/<string:prio>/<string:data>/<int:user_id>')
+def addTodo(txt, prio, data, user_id):
+    db.session.add(Todo(text=txt, isComplete=False, user_id=int(user_id), prio=prio,date=datetime.strptime(data, '%Y-%m-%d')))
     db.session.commit()
     li = Todo.query.all()
     return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)

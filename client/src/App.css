@@ -276,3 +276,20 @@ display: none;
   align-items: center;
   font-size: 18px;
 }
+.logoutBtn {
+  background: linear-gradient(to right, #c20bfd, #0099ff);
+  margin: 15px 0px;
+  color: white;
+  width: 200px;
+  height: 66px;
+  font-size: 18px;
+  padding: 22px 24px;
+  border-radius: 5px;
+}
+.logout-div{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0px  auto;
+}

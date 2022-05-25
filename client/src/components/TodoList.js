@@ -3,12 +3,12 @@ import TodoForm from './TodoForm';
 import Todo from './Todo';
 import { Redirect } from 'react-router-dom';
 
-function TodoList({user}) {
+function TodoList(passedData, logout) {
 
-  const [todos, setTodos] = useState([{}]);
+  const [todos, setTodos] = useState([]);
 
   const fetchTodos = () => {
-    fetch('/todos').then(
+    fetch('/todos/'+passedData.data.id).then(
         res => res.json()
       ).then(
         data => {
@@ -19,16 +19,12 @@ function TodoList({user}) {
     
   useEffect(fetchTodos, []);
 
-  if(user!=='Mateusz'){
-    return <Redirect to='/' />;
-  }
-
   const addTodo = (todo,prio,date) => {
     if (todo === '' || /^\s*$/.test(todo)) {
         console.log("Naura");
         return;
     }
-    fetch("/addTodo/"+todo+"/"+prio+"/"+date).then(
+    fetch("/addTodo/"+todo+"/"+prio+"/"+date+"/"+passedData.data.id).then(
         res => res.json()
       ).then(
         data => {
@@ -78,11 +74,12 @@ function TodoList({user}) {
 
   return (
     <>
-      <h1>Twoja lista zadań {user}</h1>
+      <h1>Twoja lista zadań {passedData.data.user}</h1>
       <TodoForm onSubmit={addTodo} />
       {todos.map((todo, index) => (
       <Todo todo={todo} index={index} completeTodo={completeTodo} removeTodo={removeTodo} updateTodo={updateTodo}/>
         ))}
+      <div className='logout-div'><form onSubmit={logout}><button className='logoutBtn'>Wyloguj</button></form></div>
     </>
   );
 }
