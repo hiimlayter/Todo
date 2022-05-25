@@ -1,7 +1,9 @@
+from datetime import date
 from textwrap import indent
 from flask import Flask
 import json
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -15,12 +17,16 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String())
     isComplete = db.Column(db.Boolean, default=False)
+    date = db.Column(db.Date, default=db.func.now())
+    prio = db.Column(db.String())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     def to_json(self):
         return {
             'id': self.id,
             'text': self.text,
-            'isComplete': self.isComplete
+            'isComplete': self.isComplete,
+            'date': self.date,
+            'prio': self.prio
         }
 
 class User(db.Model):
@@ -36,10 +42,12 @@ class User(db.Model):
             'todos': [todo.to_json() for todo in self.todos]
         }
 
+db.create_all()
+
 @app.route('/todos')
-def members():
+def todos():
     li = Todo.query.all()
-    return json.dumps([o.to_json() for o in li],indent=3)
+    return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
 @app.route('/completeTodo/<int:ident>')
 def completeTodo(ident):
@@ -47,7 +55,7 @@ def completeTodo(ident):
     todo.isComplete = not todo.isComplete
     db.session.commit()
     li = Todo.query.all()
-    return json.dumps([o.to_json() for o in li],indent=3)
+    return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
 @app.route('/deleteTodo/<int:ident>')
 def deleteTodo(ident):
@@ -55,22 +63,24 @@ def deleteTodo(ident):
     db.session.delete(todo)
     db.session.commit()
     li = Todo.query.all()
-    return json.dumps([o.to_json() for o in li],indent=3)
+    return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
-@app.route('/addTodo/<string:txt>')
-def addTodo(txt):
-    db.session.add(Todo(text=txt, isComplete=False, user_id=1))
+@app.route('/addTodo/<string:txt>/<string:prio>/<string:data>')
+def addTodo(txt, prio, data):
+    db.session.add(Todo(text=txt, isComplete=False, user_id=1, prio=prio,date=datetime.strptime(data, '%Y-%m-%d')))
     db.session.commit()
     li = Todo.query.all()
-    return json.dumps([o.to_json() for o in li],indent=3)
+    return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
-@app.route('/editTodo/<int:ident>/<string:text>')
-def editTodo(ident, text):
+@app.route('/editTodo/<int:ident>/<string:text>/<string:prio>/<string:data>')
+def editTodo(ident, text, prio, data):
     todo = Todo.query.filter_by(id=ident).first()
     todo.text = text
+    todo.prio = prio
+    todo.date = datetime.strptime(data, '%Y-%m-%d')
     db.session.commit()
     li = Todo.query.all()
-    return json.dumps([o.to_json() for o in li],indent=3)
+    return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -23,12 +23,12 @@ function TodoList({user}) {
     return <Redirect to='/' />;
   }
 
-  const addTodo = todo => {
+  const addTodo = (todo,prio,date) => {
     if (todo === '' || /^\s*$/.test(todo)) {
         console.log("Naura");
         return;
     }
-    fetch("/addTodo/"+todo).then(
+    fetch("/addTodo/"+todo+"/"+prio+"/"+date).then(
         res => res.json()
       ).then(
         data => {
@@ -37,12 +37,17 @@ function TodoList({user}) {
       )
   };
 
-  const updateTodo = (todoId, currentValue, newValue) => {
-    if (newValue === '' || /^\s*$/.test(newValue) || currentValue === newValue) {
-        console.log("Naura");
-        return;
+  const updateTodo = (todoId, currentValue, newValue, oldPrio, newPrio, oldDate, newDate) => {
+    if(newPrio === oldPrio){
+      if(newDate === oldDate){
+        if (newValue === '' || /^\s*$/.test(newValue) || currentValue === newValue) {
+          console.log("Naura");
+          return;
+        }
+      }
     }
-    fetch("/editTodo/"+todoId+"/"+newValue).then(
+    console.log(todoId, currentValue, newValue, oldPrio, newPrio, oldDate, newDate);
+    fetch("/editTodo/"+todoId+"/"+newValue+"/"+newPrio+"/"+newDate).then(
         res => res.json()
       ).then(
         data => {
