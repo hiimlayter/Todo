@@ -1,7 +1,7 @@
 import React from 'react'
 import {useState} from 'react'
-import { BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import './App.css';
+import LoginForm from './components/LoginForm';
 import TodoList from './components/TodoList';
 
 function App(){
@@ -55,22 +55,11 @@ function App(){
 return (
     <div className='todo-app'>
 
-      {userID==''? (
-      <div style={{color: "white"}}>
-        <h1>Todo App</h1>
-        <form>
-          <label>Username:</label>
-          <input type='text' name='username' onChange={handleChangeUsername}/>
-          <label>Password:</label>
-          <input type='password' name='password' onChange={handleChangePassword}/>
-          <button onClick={(e) => {
-            e.preventDefault();
-            login();
-          }
-          }>Login</button>
-        </form>
-        <div className='error-log'>{error}</div>
-      </div>
+      {userID===''? (
+      <>
+      <h1 style={{color: "white", fontSize: "45px"}}>Todo App</h1>
+      <LoginForm error={error} handleChangePassword={handleChangePassword} handleChangeUsername={handleChangeUsername} login={login}/>
+      </>
       ) : (
       <TodoList data={passData()} logout={logout}/>
     )}
