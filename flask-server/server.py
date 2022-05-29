@@ -50,48 +50,60 @@ def login():
     password = values['password']
     user = User.query.filter_by(name=name, password=password).first()
     if user:
-        print("Git")
         return jsonify({'user': user.name, 'id': user.id, 'success': True})
     else:
-        print("Nie Git")
-        return jsonify({'success': False,'error': 'User not found'})
+        return jsonify({'success': False,'error': 'Błędne dane'})
+
+@app.route('/register', methods=['POST'])
+def register():
+    values = request.get_json()
+    name = values['username']
+    password = values['password']
+    user = User.query.filter_by(name=name).first()
+    if user:
+        return jsonify({'success': False,'error': 'Użytkownik o takiej nazwie już istnieje'})
+    else:
+        user = User(name=name, password=password)
+        db.session.add(user)
+        db.session.commit()
+        return jsonify({'success': True})
 
 @app.route('/todos/<int:user_id>')
 def todos(user_id):
     li = Todo.query.filter_by(user_id=user_id).all()
     return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
-@app.route('/completeTodo/<int:ident>')
-def completeTodo(ident):
+@app.route('/completeTodo/<int:ident>/<int:user_id>')
+def completeTodo(ident, user_id):
     todo = Todo.query.filter_by(id=ident).first()
     todo.isComplete = not todo.isComplete
     db.session.commit()
-    li = Todo.query.all()
+    li = Todo.query.filter_by(user_id=user_id).all()
     return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
-@app.route('/deleteTodo/<int:ident>')
-def deleteTodo(ident):
+@app.route('/deleteTodo/<int:ident>/<int:user_id>')
+def deleteTodo(ident, user_id):
     todo = Todo.query.filter_by(id=ident).first()
     db.session.delete(todo)
     db.session.commit()
-    li = Todo.query.all()
+    li = Todo.query.filter_by(user_id=user_id).all()
     return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
 @app.route('/addTodo/<string:txt>/<string:prio>/<string:data>/<int:user_id>')
 def addTodo(txt, prio, data, user_id):
     db.session.add(Todo(text=txt, isComplete=False, user_id=int(user_id), prio=prio,date=datetime.strptime(data, '%Y-%m-%d')))
     db.session.commit()
-    li = Todo.query.all()
+    li = Todo.query.filter_by(user_id=user_id).all()
     return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
-@app.route('/editTodo/<int:ident>/<string:text>/<string:prio>/<string:data>')
-def editTodo(ident, text, prio, data):
+@app.route('/editTodo/<int:ident>/<string:text>/<string:prio>/<string:data>/<int:user_id>')
+def editTodo(ident, text, prio, data, user_id):
     todo = Todo.query.filter_by(id=ident).first()
     todo.text = text
     todo.prio = prio
     todo.date = datetime.strptime(data, '%Y-%m-%d')
     db.session.commit()
-    li = Todo.query.all()
+    li = Todo.query.filter_by(user_id=user_id).all()
     return json.dumps([o.to_json() for o in li],indent=4, sort_keys=True, default=str)
 
 if __name__ == '__main__':

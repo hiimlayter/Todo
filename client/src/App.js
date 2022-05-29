@@ -3,12 +3,15 @@ import {useState} from 'react'
 import './App.css';
 import LoginForm from './components/LoginForm';
 import TodoList from './components/TodoList';
+import RegisterForm from './components/RegisterForm';
 
 function App(){
-  const [user, setUser] = useState('Mateusz');
-  const [userID, setUserID] = useState('');
+  
+  const [user, setUser] = useState(sessionStorage.getItem('user')===null?'':sessionStorage.getItem('user'));
+  const [userID, setUserID] = useState(sessionStorage.getItem('userID')===null?'':sessionStorage.getItem('userID'));
   
   const [error, setError] = useState('');
+  const [regerror, setRegerror] = useState('');
 
   var username = '';
   var password = '';
@@ -26,11 +29,6 @@ function App(){
     return data;
   }
 
-  const logout = () => {
-    setUser('');
-    setUserID('');
-  }
-
   const login = () => {
     var requestOptions = {
       method: 'POST',
@@ -44,9 +42,30 @@ function App(){
         if (data.success) {
           setUser(data.user);
           setUserID(data.id);
+          sessionStorage.setItem('user', data.user);
+          sessionStorage.setItem('userID', data.id);
         }
         else{
           setError(data.error);
+        }
+      }
+    )
+  }
+  const register = () => {
+    var requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({'username': username, 'password': password})
+    };
+    fetch('/register', requestOptions).then(
+      res => res.json()
+    ).then(
+      data => {
+        if (data.success) {
+          login();
+        }
+        else{
+          setRegerror(data.error);
         }
       }
     )
@@ -57,11 +76,13 @@ return (
 
       {userID===''? (
       <>
-      <h1 style={{color: "white", fontSize: "45px"}}>Todo App</h1>
-      <LoginForm error={error} handleChangePassword={handleChangePassword} handleChangeUsername={handleChangeUsername} login={login}/>
+      <h1 style={{color: "white", fontSize: "40px"}}>Todo App</h1>
+      <LoginForm error={error} setError={setError} handleChangePassword={handleChangePassword} handleChangeUsername={handleChangeUsername} login={login}/>
+      <hr className='hr-form'></hr>
+      <RegisterForm regerror={regerror} setRegerror={setRegerror} handleChangePassword={handleChangePassword} handleChangeUsername={handleChangeUsername} register={register}/>
       </>
       ) : (
-      <TodoList data={passData()} logout={logout}/>
+      <TodoList data={passData()} setUser={setUser} setUserID={setUserID}/>
     )}
 
     </div>

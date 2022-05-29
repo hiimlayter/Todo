@@ -3,8 +3,8 @@ import React, {useState, useEffect, useRef} from 'react'
 function TodoForm(props) {
 
     const [input,setInput] = useState(props.edit ? props.edit.value : '');
-    const [prio,setPrio] = useState(props.edit ? props.edit.prio : '');
-    const [date,setDate] = useState(props.edit ? props.edit.date : '');
+    const [prio,setPrio] = useState(props.edit ? props.edit.prio : "medium");
+    const [date,setDate] = useState(props.edit ? props.edit.date : "2022-01-01");
 
     const inputRef = useRef(null);
 

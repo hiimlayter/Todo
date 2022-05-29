@@ -16,10 +16,10 @@ body {
   flex-direction: column;
   justify-content: start;
   width: 1200px;
-  min-height: 800px;
+  min-height: 850px;
   background: #141414;
   text-align: center;
-  margin: 128px auto;
+  margin: 65px auto;
   border-radius: 50px;
   padding-bottom: 32px;
   opacity: 0.95;
@@ -343,6 +343,7 @@ display: none;
 .error-log{
   color: red;
   font-size: 18px;
+  height: 25px;
 }
 
 ::-webkit-scrollbar-track
@@ -362,4 +363,11 @@ display: none;
 {
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
 	background-color: #8335fa;
+}
+.hr-form{
+  width: 60%;
+  border-radius: 5px;
+  border: 1px solid #0099ff;
+  margin: 0px auto;
+  margin: 15px auto;
 }
