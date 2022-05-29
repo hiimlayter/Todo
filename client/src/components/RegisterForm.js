@@ -23,7 +23,11 @@ function RegisterForm({handleChangePassword,handleChangeUsername,register,regerr
           <button className='login-btn' onClick={(e) => {
             e.preventDefault();
             let check = document.getElementById('regpass').value === document.getElementById('regpass2').value;
-            let emptyNameOrPass = document.getElementById('regpass').value !== '' && document.getElementById('regnazwa').value !== '' && document.getElementById('regpass2').value !== '';
+            
+            let emptyNameOrPass = document.getElementById('regpass').value !== '' 
+            && document.getElementById('regnazwa').value !== '' 
+            && document.getElementById('regpass2').value !== '';
+
             if(check && emptyNameOrPass){
                 register();
             }

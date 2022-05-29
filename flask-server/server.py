@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-#Members API Route
+#Models
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String())

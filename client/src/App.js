@@ -42,6 +42,7 @@ function App(){
         if (data.success) {
           setUser(data.user);
           setUserID(data.id);
+          setError('');
           sessionStorage.setItem('user', data.user);
           sessionStorage.setItem('userID', data.id);
         }
@@ -63,6 +64,7 @@ function App(){
       data => {
         if (data.success) {
           login();
+          setRegerror('');
         }
         else{
           setRegerror(data.error);
@@ -76,10 +78,16 @@ return (
 
       {userID===''? (
       <>
+
       <h1 style={{color: "white", fontSize: "40px"}}>Todo App</h1>
-      <LoginForm error={error} setError={setError} handleChangePassword={handleChangePassword} handleChangeUsername={handleChangeUsername} login={login}/>
+      <LoginForm error={error} setError={setError} handleChangePassword={handleChangePassword} 
+      handleChangeUsername={handleChangeUsername} login={login}/>
+
       <hr className='hr-form'></hr>
-      <RegisterForm regerror={regerror} setRegerror={setRegerror} handleChangePassword={handleChangePassword} handleChangeUsername={handleChangeUsername} register={register}/>
+
+      <RegisterForm regerror={regerror} setRegerror={setRegerror} handleChangePassword={handleChangePassword} 
+      handleChangeUsername={handleChangeUsername} register={register}/>
+
       </>
       ) : (
       <TodoList data={passData()} setUser={setUser} setUserID={setUserID}/>
